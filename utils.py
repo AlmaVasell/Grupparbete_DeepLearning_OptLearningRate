@@ -42,6 +42,8 @@ def model_compile_and_fit(model, X_train, y_train, X_val, y_val, name="Modell", 
     Returnerar träningshistoriken.
     """
 
+    model = keras.models.clone_model(model)
+
     opt = keras.optimizers.get(optimizer)
     opt.learning_rate = learning_rate
 
