@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from tensorflow import keras
+import time as time
 
 
 def plot_history(history, title="Träningskurvor"):
@@ -35,7 +36,7 @@ def plot_history(history, title="Träningskurvor"):
     plt.tight_layout()
     plt.show()
 
-def model_compile_and_fit(model, X_train, y_train, X_val, y_val, epochs=20, optimizer="adam", learning_rate=0.001):
+def model_compile_and_fit(model, X_train, y_train, X_val, y_val, name="Modell", epochs=20, optimizer="adam", learning_rate=0.001, callbacks=None):
     """
     Kompilerar och tränar modellen med given data och antal epoker.
     Returnerar träningshistoriken.
@@ -50,13 +51,42 @@ def model_compile_and_fit(model, X_train, y_train, X_val, y_val, epochs=20, opti
         metrics=["accuracy"]
     )
 
+    start_time = time.time()
+
+    early_stop = keras.callbacks.EarlyStopping(monitor="val_loss", patience=3, restore_best_weights=True)
+
+    if callbacks is None:
+        callbacks = [early_stop]
+    else:
+        callbacks = callbacks + [early_stop]
+
     history = model.fit(
         X_train,
         y_train,
         validation_data=(X_val, y_val),
         epochs=epochs,
-        callbacks=[keras.callbacks.EarlyStopping(monitor="val_loss", patience=3, restore_best_weights=True)],
+        callbacks=callbacks
         batch_size=32
     )
 
-    return history
+    training_time = time.time() - start_time
+
+    print(f"\nResultat för {name}:")
+    print(f"Antal epoker:        {len(history.history['loss'])}")
+    print(f"Train accuracy:      {history.history['accuracy'][-1]:.4f}")
+    print(f"Train loss:          {history.history['loss'][-1]:.4f}")
+    print(f"Validation accuracy: {history.history['val_accuracy'][-1]:.4f}")
+    print(f"Validation loss:     {history.history['val_loss'][-1]:.4f}")
+    print(f"Träningstid:         {training_time:.2f} sekunder")
+
+    plot_history(history, title=name)
+
+    return history, {
+        "name": name,
+        "train_accuracy": history.history["accuracy"][-1],
+        "train_loss": history.history["loss"][-1],
+        "validation_accuracy": history.history["val_accuracy"][-1],
+        "validation_loss": history.history["val_loss"][-1],
+        "epochs_trained": len(history.history["loss"]),
+        "training_time": training_time
+    }
