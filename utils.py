@@ -65,7 +65,7 @@ def model_compile_and_fit(model, X_train, y_train, X_val, y_val, name="Modell", 
         y_train,
         validation_data=(X_val, y_val),
         epochs=epochs,
-        callbacks=callbacks
+        callbacks=callbacks,
         batch_size=32
     )
 
