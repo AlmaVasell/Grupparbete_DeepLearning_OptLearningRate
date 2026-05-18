@@ -74,7 +74,6 @@ def model_compile_and_fit(model, X_train, y_train, X_val, y_val, name="Modell", 
         batch_size=32
     )
 
-
     # Ändrat så vi inte skriver ut värden från sista epok utan skriver ut bästa värdet
     training_time = time.time() - start_time
 
@@ -96,7 +95,6 @@ def model_compile_and_fit(model, X_train, y_train, X_val, y_val, name="Modell", 
         print(f"Träningstid:         {training_time:.2f} sekunder")
 
         plot_history(history, title=name)
-
 
 
     return model, history, {
