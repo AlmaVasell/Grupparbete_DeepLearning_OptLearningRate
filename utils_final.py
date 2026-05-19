@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 from IPython.display import display
 
@@ -76,22 +77,31 @@ def model_compile_and_fit(model, X_train, y_train, X_val, y_val, name="Modell", 
 
     training_time = time.time() - start_time
 
+    best_index = np.argmax(history.history["val_accuracy"])
+
+    best_train_accuracy = history.history["accuracy"][best_index]
+    best_train_loss = history.history["loss"][best_index]
+    best_val_accuracy = history.history["val_accuracy"][best_index]
+    best_val_loss = history.history["val_loss"][best_index]
+
     print(f"\nResultat för {name}:")
     print(f"Antal epoker:        {len(history.history['loss'])}")
-    print(f"Train accuracy:      {history.history['accuracy'][-1]:.4f}")
-    print(f"Train loss:          {history.history['loss'][-1]:.4f}")
-    print(f"Validation accuracy: {history.history['val_accuracy'][-1]:.4f}")
-    print(f"Validation loss:     {history.history['val_loss'][-1]:.4f}")
+    print(f"Train accuracy:      {best_train_accuracy:.4f}")
+    print(f"Train loss:          {best_train_loss:.4f}")
+    print(f"Validation accuracy: {best_val_accuracy:.4f}")
+    print(f"Validation loss:     {best_val_loss:.4f}")
     print(f"Träningstid:         {training_time:.2f} sekunder")
 
     plot_history(history, title=name)
 
     return model, history, {
-        "name": name,
-        "train_accuracy": history.history["accuracy"][-1],
-        "train_loss": history.history["loss"][-1],
-        "validation_accuracy": history.history["val_accuracy"][-1],
-        "validation_loss": history.history["val_loss"][-1],
-        "epochs_trained": len(history.history["loss"]),
-        "training_time": training_time
+    "name": name,
+    "train_accuracy": best_train_accuracy,
+    "train_loss": best_train_loss,
+    "validation_accuracy": best_val_accuracy,
+    "validation_loss": best_val_loss,
+    "epochs_trained": len(history.history["loss"]),
+    "learning_rate": learning_rate,
+    "training_time": training_time
     }
+
