@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-from IPython.display import display
-
 import tensorflow as tf
 from tensorflow import keras
 import time as time
